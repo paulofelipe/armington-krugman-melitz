@@ -1,9 +1,15 @@
-solve_model <- function(model, shocks, alpha_min = 1e-4, alpha_max = 1e-1){
+solve_model <- function(model, shocks, alpha_min = 1e-4, alpha_max = 1e-1,
+                        trace = FALSE, triter = 100, ...){
+  
+  message("Solving the baseline")
   
   sol_bln <- solve_emr_block(
     model = model,
     alpha_min = alpha_min,
-    alpha_max = alpha_max
+    alpha_max = alpha_max,
+    trace = trace,
+    triter = triter,
+    ...
   )
   
   results_bln <- map(sol_bln$variables, ~{
@@ -17,10 +23,15 @@ solve_model <- function(model, shocks, alpha_min = 1e-4, alpha_max = 1e-1){
   model_cfl <- model
   model_cfl$params <- shocks
   
+  message("Solving the counterfactual")
+  
   sol_cfl <- solve_emr_block(
     model = model_cfl,
     alpha_min = alpha_min,
-    alpha_max = alpha_max
+    alpha_max = alpha_max,
+    trace = trace,
+    triter = triter,
+    ...
   )
   
   results_cfl <- map(sol_cfl$variables, ~{
